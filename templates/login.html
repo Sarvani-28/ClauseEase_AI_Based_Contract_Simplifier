@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Login - ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <!-- Left Side - Branding -->
+    <div class="auth-left">
+        <div class="left-content">
+            <h1 class="branding-title">ClauseEase AI</h1>
+            <p class="branding-subtitle">Simplify your legal contract language into easy-to-understand clauses with AI precision</p>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span class="feature-text">AI-Powered Clause Detection</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span class="feature-text">Multi-Format Support (PDF, DOCX, TXT)</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span class="feature-text">Smart Language Simplification</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span class="feature-text">Instant Legal Term Glossary</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span class="feature-text">Concise Contract Summary Highlights</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="auth-right">
+        <div class="auth-card">
+            <!-- Toggle Switch -->
+            <div class="auth-toggle">
+                <a href="{{ url_for('auth.register') }}" class="toggle-btn">Sign Up</a>
+                <button class="toggle-btn active">Sign In</button>
+            </div>
+
+            <!-- Auth Header -->
+            <div class="auth-header">
+                <h2>Sign In</h2>
+                <p>Access your ClauseEase AI dashboard</p>
+            </div>
+
+            <!-- Login Form -->
+            <form class="auth-form" method="POST">
+                {{ form.hidden_tag() }}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="message error">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Email field -->
+                <div class="input-group">
+                    {{ form.email.label(class="") }}
+                    {{ form.email(class="", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                        <span class="error-text">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                
+                <!-- Password field -->
+                <div class="input-group">
+                    {{ form.password.label(class="") }}
+                    {{ form.password(class="", placeholder="Enter your password") }}
+                    {% for error in form.password.errors %}
+                        <span class="error-text">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                
+                {{ form.submit(class="btn-submit") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

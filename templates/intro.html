@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClauseEase - Welcome</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .intro-container {
+            text-align: center;
+            max-width: 90%;
+            /* Added padding to push content away from vertical edges */
+            padding-top: 5vh; 
+            padding-bottom: 5vh;
+        }
+        
+        .logo-animation {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+        
+        .logo {
+            font-size: 3.8rem; /* Slightly larger */
+            font-weight: 700;
+            /* --- MODIFIED --- Increased margin */
+            margin-bottom: 1.5rem; 
+            color: #ffffff;
+            text-shadow: 0px 3px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Increased gap */
+        }
+        
+        .logo i {
+            font-size: 3.2rem; /* Adjusted icon size */
+            color: #e0e7ff; 
+        }
+
+        .tagline {
+            font-size: 1.35rem; /* Slightly larger */
+            font-weight: 400;
+            /* --- MODIFIED --- Increased margin */
+            margin-bottom: 3rem; 
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+            padding: 0 15px;
+            color: #e0e7ff;
+            max-width: 550px; /* Wider */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.5s forwards;
+            /* --- MODIFIED --- Increased margin */
+            margin-bottom: 3.5rem; 
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem; /* Increased gap */
+            flex-wrap: wrap; 
+        }
+
+        .feature-item {
+            text-align: center;
+             flex: 0 1 160px; /* Slightly wider base */
+        }
+
+        .feature-icon {
+            font-size: 3rem; /* Larger icon */
+            /* --- MODIFIED --- Increased margin */
+            margin-bottom: 1rem; 
+            color: #feca57; 
+            display: inline-block; 
+            transition: transform 0.3s ease;
+        }
+         .feature-item:hover .feature-icon {
+             transform: scale(1.15) rotate(5deg); 
+         }
+
+        .feature-item p {
+            font-size: 1rem; /* Larger text */
+            color: #ced4da;
+            margin-bottom: 0;
+        }
+        
+        .btn-entry {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2s forwards;
+            padding: 14px 40px; /* Slightly adjusted padding */
+            font-size: 1.2rem; /* Larger text */
+            font-weight: 500;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            color: white;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
+        }
+        
+        .btn-entry:hover {
+            background: white;
+            color: #4e54c8; 
+            transform: translateY(-4px) scale(1.03); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
+            border-color: white;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="intro-container"> 
+        <div class="logo-animation">
+            
+            <div class="logo">
+                <i class="fas fa-file-alt"></i> ClauseEase AI
+            </div>
+            
+            <div class="tagline">
+                AI-Powered Contract Language Simplifier
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <p>AI Powered Simplification</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                    <p>Instantly Highlighted Text</p> 
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+                    <p>Understand Contract in Minutes</p>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('auth.login') }}" class="btn-entry">
+                 Get Started
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> -->
+</body>
+</html>

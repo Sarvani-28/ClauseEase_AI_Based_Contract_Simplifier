@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Results - ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    /* Ensure buttons align nicely */
+    .header-actions {
+        display: flex;
+        gap: 1rem; /* Space between buttons */
+        align-items: center; /* Vertical alignment */
+    }
+    /* Add any other specific styles needed */
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar">
+    <div class="nav-brand">
+        <div class="brand-icon">📋</div>
+        <div class="brand-info">
+            <h2>Clause Ease</h2>
+            <p>AI Based Contract Language Simplifier</p>
+        </div>
+    </div>
+    <div class="nav-actions">
+        <span class="welcome-text">Welcome, {{ current_user.username }}</span>
+        <a href="{{ url_for('auth.logout') }}" class="btn-signout">
+            <span>🚪</span> Sign Out
+        </a>
+    </div>
+</nav>
+
+<div class="results-container">
+    <div class="results-header">
+        <div class="header-left">
+            <h1>Processing Results</h1>
+            <div class="status-badge">
+                <span class="status-icon">✓</span>
+                <span>Processing completed</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('download_report', document_id=document.id) }}" class="btn-download"> <i class="fas fa-download me-2"></i> Download Report
+            </a>
+            <a href="{{ url_for('landing') }}" class="btn btn-outline-light"> <i class="fas fa-arrow-left me-2"></i>Upload Another
+            </a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-card-full">
+            <div class="info-header">
+                <span class="info-icon">📄</span>
+                <span>Document</span>
+            </div>
+            <div class="info-content">
+                <div class="document-list">
+                    <div class="document-item">
+                        <span class="doc-bullet">•</span>
+                        <span>{{ document.document_title }}</span>
+                    </div>
+                </div>
+                <div class="info-meta">
+                    <span>1 file processed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-section">
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3 class="chart-title">Clause Types Distribution</h3>
+                {% if results.clause_type_chart %}
+                <img src="{{ results.clause_type_chart }}" alt="Clause Types Chart" style="width: 100%; height: auto; border-radius: 8px; background: white; padding: 20px;">
+                {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.6);">No chart data available</p>
+                {% endif %}
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Text Statistics Comparison</h3>
+                {% if results.stats_chart %}
+                <img src="{{ results.stats_chart }}" alt="Statistics Chart" style="width: 100%; height: auto; border-radius: 8px; background: white; padding: 20px;">
+                {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.6);">No chart data available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-icon">🔍</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ results.clauses|length if results.clauses else 0 }}</div>
+                    <div class="stat-label">Clauses Found</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ results.legal_terms|length if results.legal_terms else 0 }}</div>
+                    <div class="stat-label">Legal Terms</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ document.word_count }}</div>
+                    <div class="stat-label">Total Words</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ results.simplified_metrics.flesch_reading_ease|int if results.simplified_metrics and results.simplified_metrics.flesch_reading_ease else document.original_readability_score|int }}</div>
+                    <div class="stat-label">Readability</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <button class="tab-button active" data-tab="analysis">
+                <i class="fas fa-magnifying-glass-chart me-1"></i> Text Analysis
+            </button>
+            <button class="tab-button" data-tab="clauses">
+                <i class="fas fa-list-check me-1"></i> Detected Clauses
+            </button>
+            <button class="tab-button" data-tab="terms">
+                <i class="fas fa-gavel me-1"></i> Legal Terms
+            </button>
+            <button class="tab-button" data-tab="simplified">
+                <i class="fas fa-wand-magic-sparkles me-1"></i> Simplified Text
+            </button>
+            <button class="tab-button" data-tab="summary">
+                <i class="fas fa-file-lines me-1"></i> Summary
+            </button>
+        </div>
+
+        <div class="tab-content active" id="analysis-tab">
+            <div class="comparison-container">
+                <h2 class="section-title">📊 Side-by-Side Comparison</h2>
+                <p class="section-subtitle">Original vs Simplified Text with Highlighted Legal Terms</p>
+
+                <div class="text-comparison">
+                    <div class="text-box original-box">
+                        <div class="text-box-header">
+                            <span class="box-icon"><i class="fas fa-file-alt"></i></span>
+                            <h3>Original Text</h3>
+                        </div>
+                        <div class="text-box-meta">
+                            <span><strong>{{ document.word_count }}</strong> words</span>
+                            <span>•</span>
+                            <span><strong>{{ (document.original_text.split('.')|length - 1)|abs if document.original_text else 0 }}</strong> sentences</span>
+                        </div>
+                        <div class="text-box-content">
+                            {% if results.highlighted_text %}
+                                {{ results.highlighted_text|safe }}
+                            {% else %}
+                                {{ document.original_text }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-box simplified-box">
+                        <div class="text-box-header">
+                            <span class="box-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+                            <h3>Simplified Text</h3>
+                        </div>
+                        <div class="text-box-meta">
+                            <span><strong>{{ (results.simplified_text.split()|length) if results.simplified_text else 0 }}</strong> words</span>
+                            <span>•</span>
+                            <span><strong>{{ (results.simplified_text.split('.')|length - 1)|abs if results.simplified_text else 0 }}</strong> sentences</span>
+                        </div>
+                        <div class="text-box-content">
+                            {{ results.simplified_text if results.simplified_text and 'disabled' not in results.simplified_text else document.simplified_text_basic }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="tab-content" id="summary-tab">
+             <div class="summary-content">
+                 <h2 class="section-title">📑 Document Summary</h2>
+                 <p class="section-subtitle">Quick overview of your legal document</p>
+
+                 <div class="summary-box">
+                     <div class="summary-section">
+                         <h3 class="summary-heading"><i class="fas fa-file-alt me-2"></i>Document Overview</h3>
+                         <p class="summary-text">
+                             This legal document, '{{ document.document_title }}', contains approximately <strong>{{ document.word_count }} words</strong> across <strong>{{ (document.original_text.split('.')|length - 1)|abs if document.original_text else 0 }} sentences</strong>.
+                             It includes <strong>{{ results.clauses|length if results.clauses else 0 }} detected clauses</strong>
+                             and <strong>{{ results.legal_terms|length if results.legal_terms else 0 }} identified legal terms</strong>.
+                             The content has been analyzed and simplified to enhance readability.
+                         </p>
+                     </div>
+
+                     <div class="summary-section">
+                         <h3 class="summary-heading"><i class="fas fa-chart-line me-2"></i>Key Readability Metrics</h3>
+                         <ul class="summary-list">
+                             <li><strong>Original Readability Score:</strong> {{ document.original_readability_score|round(1) if document.original_readability_score else 'N/A' }} (Flesch Reading Ease)</li>
+                             <li><strong>Simplified Readability Score:</strong> {{ results.simplified_metrics.flesch_reading_ease|round(1) if results.simplified_metrics and results.simplified_metrics.flesch_reading_ease else 'N/A' }} (Flesch Reading Ease)</li>
+                             <li><strong>Improvement:</strong>
+                                 {% if results and results.simplified_metrics and 'flesch_reading_ease' in results.simplified_metrics and results.simplified_metrics.flesch_reading_ease is not none and document and document.original_readability_score is not none %}
+                                     {% set improvement = (results.simplified_metrics.flesch_reading_ease - document.original_readability_score)|round(1) %}
+                                     <span style="color: {% if improvement > 0 %}#28a745{% elif improvement < 0 %}#dc3545{% else %}inherit{% endif %}; font-weight: bold;">
+                                         {{ '+' if improvement > 0 else '' }}{{ improvement }} points
+                                     </span>
+                                 {% else %}
+                                     N/A {# Fallback if any value is missing #}
+                                 {% endif %}
+                             </li>
+                             </ul>
+                     </div>
+
+                     {% if results.clauses and results.clauses|length > 0 %}
+                     <div class="summary-section">
+                         <h3 class="summary-heading"><i class="fas fa-tags me-2"></i>Clause Types Detected</h3>
+                         <div class="clause-types-list">
+                             {% set clause_types = [] %}
+                             {% for clause in results.clauses %}
+                                 {% if clause is mapping and clause.get('type') %}
+                                     {% if clause.get('type') not in clause_types %}
+                                         {% set _ = clause_types.append(clause.get('type')) %}
+                                     {% endif %}
+                                 {% endif %}
+                             {% endfor %}
+                             {% for clause_type in clause_types|sort %}
+                                 <span class="clause-type-tag">{{ clause_type }}</span>
+                             {% else %}
+                                 <span>No specific clause types identified.</span>
+                             {% endfor %}
+                         </div>
+                     </div>
+                     {% endif %}
+                 </div>
+             </div>
+         </div>
+
+
+        <div class="tab-content" id="clauses-tab">
+             <div class="clauses-section-content"> <h2 class="section-title">📋 Extracted Clauses with Definitions</h2> <p class="section-subtitle">{{ results.clauses|length if results.clauses else 0 }} clauses detected with detailed explanations</p> {% if results.clauses and results.clauses|length > 0 %} {% for clause in results.clauses %} <div class="clause-item"> <div class="clause-item-header"> <span class="clause-number">Clause {{ loop.index }}</span> {% if clause is mapping and clause.get('type') %} <span class="clause-badge">{{ clause.get('type') }}</span> {% endif %} </div> <div class="clause-item-content"> <div class="clause-text-section"> <strong class="clause-label">Original Text:</strong> <p class="clause-text"> {# Display raw_text, fall back to cleaned_text #} {{ clause.get('raw_text', clause.get('cleaned_text', 'N/A')) if clause is mapping else clause }} </p> </div> {# Display simplified text if available #} {% if clause is mapping and clause.get('simplified') and 'disabled' not in clause.get('simplified') %} <div class="clause-definition-section"> <strong class="clause-label"><i class="fas fa-wand-magic-sparkles me-1"></i> Simplified Explanation:</strong> <p class="clause-definition"> {{ clause.get('simplified', 'No simplification available.') }} </p> </div> {% endif %} </div> </div> {% endfor %} {% else %} <div class="empty-state"> <p>No clauses detected in this document.</p> </div> {% endif %} </div>
+        </div>
+
+
+        <div class="tab-content" id="terms-tab">
+             <div class="terms-section-content"> <h2 class="section-title">⚖️ Legal Terms Glossary</h2> <p class="section-subtitle">Key legal terminology found in your document</p> {% if results.legal_terms and results.legal_terms|length > 0 %} <div class="terms-grid"> {% for term in results.legal_terms %} <div class="term-card"> <div class="term-word"> {{ term.get('term', term) if term is mapping else term }} </div> {% if term is mapping and term.get('category') %} <div class="term-category">{{ term.get('category', 'Legal Term') }}</div> {% endif %} <div class="term-definition"> {{ term.get('simplified_explanation', 'Legal terminology used in contracts.') if term is mapping else 'Legal term found in the document.' }} </div> </div> {% endfor %} </div> {% else %} <div class="empty-state"> <p>No legal terms identified in this document.</p> </div> {% endif %} </div>
+        </div>
+
+
+        <div class="tab-content" id="simplified-tab">
+             <div class="simplified-section-content"> <h2 class="section-title">✨ Simplified Document</h2> <p class="section-subtitle">Plain English version of your legal document - Easy to understand</p> <div class="simplified-text-box"> <div class="simplified-text-header"> <span class="simplified-icon">📖</span> <h3>Readable Version</h3> </div> <div class="text-content"> {# Display the full simplified text if available #} {{ results.simplified_text if results.simplified_text and 'disabled' not in results.simplified_text else document.simplified_text_basic }} </div> </div> </div>
+        </div>
+
+    </div> </div> <script>
+// Tab switching functionality
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Remove active class from all buttons and contents
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked button
+        this.classList.add('active');
+
+        // Show corresponding tab content
+        const tabId = this.getAttribute('data-tab') + '-tab';
+        const targetTab = document.getElementById(tabId);
+        if(targetTab) {
+            targetTab.classList.add('active');
+        } else {
+            console.error("Tab content not found for ID:", tabId);
+        }
+    });
+});
+
+// Optional: Activate the first tab by default via JS if CSS method fails
+// document.addEventListener('DOMContentLoaded', (event) => {
+//     const firstTabButton = document.querySelector('.tab-button:first-of-type');
+//     const firstTabContent = document.querySelector('.tab-content:first-of-type');
+//     if (firstTabButton && firstTabContent && !document.querySelector('.tab-button.active')) {
+//        firstTabButton.classList.add('active');
+//        firstTabContent.classList.add('active');
+//     }
+// });
+</script>
+{% endblock %}
+
+{% block scripts %}
+{# Add scripts needed specifically for this page, like Chart.js if used #}
+{# <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> #}
+{# <script src="{{ url_for('static', filename='js/results.js') }}"></script> #}
+{% endblock %}
