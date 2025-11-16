@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<nav class="admin-nav">
+    <div class="admin-nav__brand">
+        <div class="admin-logo">📊</div>
+        <div>
+            <h1>ClauseEase Admin</h1>
+            <p>Operational Insights &amp; Usage Analytics</p>
+        </div>
+    </div>
+    <div class="admin-nav__actions">
+        <span class="admin-nav__welcome">Welcome, {{ current_user.username }}</span>
+        <a href="{{ url_for('dashboard') }}" class="admin-nav__link">Dashboard</a>
+        <a href="{{ url_for('auth.logout') }}" class="admin-nav__logout">Logout</a>
+    </div>
+</nav>
+
+<main class="admin-wrapper">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="admin-alert">
+                    <span>{{ message }}</span>
+                    <button type="button" onclick="this.parentElement.style.display='none'" aria-label="Dismiss">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <header class="admin-header">
+        <div>
+            <h2>Admin Dashboard</h2>
+            <p>Track user growth, document throughput, and engagement across ClauseEase AI.</p>
+        </div>
+        <div class="admin-meta">
+            <span>Last updated: {{ generated_at.strftime('%d %b %Y %I:%M %p') }}</span>
+        </div>
+    </header>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div>
+                <div class="stat-value">{{ total_users }}</div>
+                <span class="stat-label">Total Users</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📄</div>
+            <div>
+                <div class="stat-value">{{ total_documents }}</div>
+                <span class="stat-label">Total Documents</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⚡</div>
+            <div>
+                <div class="stat-value">{{ active_users_today }}</div>
+                <span class="stat-label">Users Active Today</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="charts-grid">
+        <article class="chart-card">
+            <div class="chart-header">
+                <span class="chart-icon">📈</span>
+                <div>
+                    <h3>User Registrations Per Day</h3>
+                    <p>Performance across the last 7 days</p>
+                </div>
+            </div>
+            {% if registrations_chart %}
+            <img src="{{ registrations_chart }}" alt="Registrations trend chart" class="chart-image">
+            {% else %}
+            <div class="chart-empty">No registration data available.</div>
+            {% endif %}
+        </article>
+        <article class="chart-card">
+            <div class="chart-header">
+                <span class="chart-icon">🗂️</span>
+                <div>
+                    <h3>Documents Processed Per Week</h3>
+                    <p>Four-week rolling activity window</p>
+                </div>
+            </div>
+            {% if documents_chart %}
+            <img src="{{ documents_chart }}" alt="Document throughput chart" class="chart-image">
+            {% else %}
+            <div class="chart-empty">No document data available.</div>
+            {% endif %}
+        </article>
+    </section>
+
+    <section class="table-card">
+        <div class="table-header">
+            <div>
+                <h3>Most Active Users</h3>
+                <p>Top 5 users ranked by number of processed documents</p>
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Documents Created</th>
+                        <th>Activity Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in active_users_data %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.documents }}</td>
+                        <td>
+                            <span class="activity-pill activity-{{ user.activity_level | lower }}">{{ user.activity_level }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="table-empty">No user activity recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+{% endblock %}

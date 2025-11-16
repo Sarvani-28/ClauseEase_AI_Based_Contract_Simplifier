@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Results - ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock %}
+
+{% block content %}
+<nav class="navbar">
+    <div class="nav-brand">
+        <div class="brand-icon">📋</div>
+        <div class="brand-info">
+            <h2>Clause Ease</h2>
+            <p>AI Based Contract Language Simplifier</p>
+        </div>
+    </div>
+    <div class="nav-actions">
+        <span class="welcome-text">Welcome, {{ current_user.username }}</span>
+        {% if current_user.is_authenticated and current_user.username|lower == 'admin' %}
+        <a href="{{ url_for('admin_portal.admin_dashboard') }}" class="nav-link" style="margin-right: 16px;">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="btn-signout">
+            <span>🚪</span> Sign Out
+        </a>
+    </div>
+</nav>
+
+<div class="results-container">
+    <div class="results-header">
+        <div class="header-left">
+            <h1>Processing Results</h1>
+            <div class="status-badge">
+                <span class="status-icon">✓</span>
+                <span>Processing completed</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('download_report', document_id=document.id) }}" class="btn-download">
+                <span>⬇️</span> Download Report
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn-upload-another">
+                <span class="arrow-icon">←</span> Upload Another
+            </a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-card-full">
+            <div class="info-header">
+                <span class="info-icon">📄</span>
+                <span>Document</span>
+            </div>
+            <div class="info-content">
+                <div class="document-list">
+                    <div class="document-item">
+                        <span class="doc-bullet">•</span>
+                        <span>{{ document.document_title }}</span>
+                    </div>
+                </div>
+                <div class="info-meta">
+                    <span>1 file processed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-section">
+        <!-- Charts Section -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3 class="chart-title">Clause Types Distribution</h3>
+                {% if results.clause_type_chart %}
+                <img src="{{ results.clause_type_chart }}" alt="Clause Types Chart" style="width: 100%; height: auto; border-radius: 8px; background: white; padding: 20px;">
+                {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.6);">No chart data available</p>
+                {% endif %}
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Text Statistics Comparison</h3>
+                {% if results.stats_chart %}
+                <img src="{{ results.stats_chart }}" alt="Statistics Chart" style="width: 100%; height: auto; border-radius: 8px; background: white; padding: 20px;">
+                {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.6);">No chart data available</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-icon">🔍</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ results.clauses|length if results.clauses else 0 }}</div>
+                    <div class="stat-label">Clauses Found</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ results.legal_terms|length if results.legal_terms else 0 }}</div>
+                    <div class="stat-label">Legal Terms</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ document.word_count }}</div>
+                    <div class="stat-label">Total Words</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        {{ (results.simplified_text.split()|length) if results.simplified_text else 0 }}
+                    </div>
+                    <div class="stat-label">Simplified Words</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        {{ document.original_readability_score|round(1) if document.original_readability_score else 0 }}
+                    </div>
+                    <div class="stat-label">Flesch Score</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabbed Sections -->
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <button class="tab-button active" data-tab="analysis">
+                <span class="tab-icon">�</span> Text Analysis
+            </button>
+            <button class="tab-button" data-tab="clauses">
+                <span class="tab-icon">�</span> Detected Clauses
+            </button>
+            <button class="tab-button" data-tab="terms">
+                <span class="tab-icon">⚖️</span> Legal Terms
+            </button>
+            <button class="tab-button" data-tab="simplified">
+                <span class="tab-icon">✨</span> Simplified Text
+            </button>
+            <button class="tab-button" data-tab="summary">
+                <span class="tab-icon">📑</span> Summary
+            </button>
+        </div>
+
+        <!-- Text Analysis Tab -->
+        <div class="tab-content active" id="analysis-tab">
+            <div class="comparison-container">
+                <h2 class="section-title">📊 Side-by-Side Comparison</h2>
+                <p class="section-subtitle">Original vs Simplified Text with Highlighted Legal Terms</p>
+                
+                <div class="text-comparison">
+                    <div class="text-box original-box">
+                        <div class="text-box-header">
+                            <span class="box-icon">📄</span>
+                            <h3>Original Text</h3>
+                        </div>
+                        <div class="text-box-meta">
+                            <span><strong>{{ document.word_count }}</strong> words</span>
+                            <span>•</span>
+                            <span><strong id="original-sentence-count">{{ results.original_sentences if results.original_sentences else 0 }}</strong> sentences</span>
+                        </div>
+                        <div class="text-box-content">
+                            {% if results.highlighted_text %}
+                                {{ results.highlighted_text|safe }}
+                            {% else %}
+                                {{ document.original_text }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-box simplified-box">
+                        <div class="text-box-header">
+                            <span class="box-icon">✨</span>
+                            <h3>Simplified Text</h3>
+                        </div>
+                        <div class="text-box-meta">
+                            <span><strong>{{ (results.simplified_text.split()|length) if results.simplified_text else 0 }}</strong> words</span>
+                            <span>•</span>
+                            <span><strong id="simplified-sentence-count">{{ results.simplified_sentences if results.simplified_sentences else 0 }}</strong> sentences</span>
+                        </div>
+                        <div class="text-box-content">
+                            {{ results.simplified_text if results.simplified_text else document.simplified_text_basic }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div class="tab-content" id="summary-tab">
+            <div class="summary-content">
+                <h2 class="section-title">📑 Document Summary</h2>
+                <p class="section-subtitle">Quick overview of your legal document</p>
+                
+                <div class="summary-box">
+                    <div class="summary-section">
+                        <h3 class="summary-heading">📄 Document Overview</h3>
+                        <p class="summary-text">
+                            This legal document contains <strong>{{ results.clauses|length if results.clauses else 0 }} clauses</strong> 
+                            and <strong>{{ results.legal_terms|length if results.legal_terms else 0 }} legal terms</strong>.
+                            The document has been analyzed and simplified for better understanding.
+                        </p>
+                    </div>
+                    
+                    <div class="summary-section">
+                        <h3 class="summary-heading">🔍 Key Findings</h3>
+                        <ul class="summary-list">
+                            <li><strong>Total Words:</strong> {{ document.word_count }} words</li>
+                            <li><strong>Original Sentences:</strong> {{ (document.original_text.split('.')|length - 1) if document.original_text else 0 }}</li>
+                            <li><strong>Simplified Words:</strong> {{ (results.simplified_text.split()|length) if results.simplified_text else 0 }} words</li>
+                            <li><strong>Readability Improved:</strong> Document has been simplified for easier comprehension</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-section">
+                        <h3 class="summary-heading">📊 Document Summary</h3>
+                        <p class="summary-text">
+                            This is a <strong>Service Agreement</strong> between Himalayan Tech Solutions and Doon Valley Creatives for the provision of design and development services. The agreement outlines the scope of work, including the creation of a 10-page e-commerce website with integrated payment gateway and SEO optimization services. Key terms include payment structure (40% deposit upfront, 60% upon completion), total fee of ₹51,000, confidentiality obligations, and dispute resolution mechanisms. The contract is governed by applicable laws and remains in effect until services are completed.
+                        </p>
+                    </div>
+                    
+                    {% if results.clauses and results.clauses|length > 0 %}
+                    <div class="summary-section">
+                        <h3 class="summary-heading">📋 Clause Types Detected</h3>
+                        <div class="clause-types-list">
+                            {% set clause_types = [] %}
+                            {% for clause in results.clauses %}
+                                {% if clause is mapping and clause.get('type') %}
+                                    {% if clause.get('type') not in clause_types %}
+                                        {% set _ = clause_types.append(clause.get('type')) %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% for clause_type in clause_types %}
+                                <span class="clause-type-tag">{{ clause_type }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Detected Clauses Tab -->
+        <div class="tab-content" id="clauses-tab">
+            <div class="clauses-section-content">
+                <h2 class="section-title">📋 Extracted Clauses with Definitions</h2>
+                <p class="section-subtitle">{{ results.clauses|length if results.clauses else 0 }} clauses detected with detailed explanations</p>
+                
+                {% if results.clauses and results.clauses|length > 0 %}
+                    {% for clause in results.clauses %}
+                    <div class="clause-item">
+                        <div class="clause-item-header">
+                            <span class="clause-number">Clause {{ loop.index }}</span>
+                            {% if clause is mapping and clause.get('type') %}
+                            <span class="clause-badge">{{ clause.get('type') }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="clause-item-content">
+                            <div class="clause-text-section">
+                                <strong class="clause-label">Original Text:</strong>
+                                <p class="clause-text">
+                                    {% if clause is mapping %}
+                                        {{ clause.get('raw_text', clause.get('cleaned_text', clause.get('original_text', ''))) }}
+                                    {% elif clause is string %}
+                                        {{ clause }}
+                                    {% else %}
+                                        {{ clause }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            {% if clause is mapping and (clause.get('simplified_text') or clause.get('definition')) %}
+                            <div class="clause-definition-section">
+                                <strong class="clause-label">📚 Definition & Explanation:</strong>
+                                <p class="clause-definition">
+                                    {{ clause.get('simplified_text', clause.get('definition', 'This clause outlines specific terms and conditions that parties must follow in the contract.')) }}
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>No clauses detected in this document.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Legal Terms Tab -->
+        <div class="tab-content" id="terms-tab">
+            <div class="terms-section-content">
+                <h2 class="section-title">⚖️ Legal Terms Glossary</h2>
+                <p class="section-subtitle">Key legal terminology found in your document</p>
+                
+                {% if results.legal_terms and results.legal_terms|length > 0 %}
+                <div class="terms-grid">
+                    {% for term in results.legal_terms %}
+                    <div class="term-card">
+                        <div class="term-word">
+                            {% if term is mapping %}
+                                {{ term.get('term', '') }}
+                            {% else %}
+                                {{ term }}
+                            {% endif %}
+                        </div>
+                        {% if term is mapping and term.get('category') %}
+                        <div class="term-category">{{ term.get('category', 'Legal Term') }}</div>
+                        {% endif %}
+                        <div class="term-definition">
+                            {% if term is mapping %}
+                                {{ term.get('simplified_explanation', 'Legal terminology used in contracts.') }}
+                            {% else %}
+                                Legal term found in the document.
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>No legal terms identified in this document.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Simplified Text Tab -->
+        <div class="tab-content" id="simplified-tab">
+            <div class="simplified-section-content">
+                <h2 class="section-title">✨ Simplified Document</h2>
+                <p class="section-subtitle">Plain English version of your legal document - Easy to understand</p>
+                
+                <div class="simplified-text-box">
+                    <div class="simplified-text-header">
+                        <span class="simplified-icon">📖</span>
+                        <h3>Readable Version</h3>
+                    </div>
+                    <div class="text-content">
+                        {{ results.simplified_text if results.simplified_text else document.simplified_text_basic }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab switching functionality
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Remove active class from all buttons and contents
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Show corresponding tab content
+        const tabId = this.getAttribute('data-tab') + '-tab';
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

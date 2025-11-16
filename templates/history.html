@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Document History - ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
+
+{% block content %}
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <div class="logo-icon">📄</div>
+            <div class="logo-text">
+                <h2>Contract Language Simplifier</h2>
+                <p>AI-Powered Legal Document Processing</p>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <a href="{{ url_for('dashboard') }}" class="nav-link">Home</a>
+            <a href="{{ url_for('history') }}" class="nav-link active">History</a>
+            {% if current_user.is_authenticated and current_user.username|lower == 'admin' %}
+            <a href="{{ url_for('admin_portal.admin_dashboard') }}" class="nav-link">Admin</a>
+            {% endif %}
+            <span class="welcome-text">Welcome, {{ current_user.username }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<main class="history-wrapper">
+    <section class="history-hero">
+        <h1>Document History</h1>
+        <p>Review previous analyses, open full reports, or download detailed summaries anytime.</p>
+    </section>
+
+    <section class="history-list">
+        <div class="history-header">
+            <div class="history-controls">
+                <a href="{{ url_for('dashboard') }}" class="btn-primary">Upload New</a>
+            </div>
+        </div>
+        <div class="history-content">
+            {% if documents %}
+                {% for document in documents %}
+                <div class="history-item">
+                    <div class="history-item-icon">📄</div>
+                    <div class="history-item-content">
+                        <div class="history-item-header">
+                            <h3 class="history-item-title">{{ document.document_title }}</h3>
+                            <div class="history-item-meta">
+                                <span class="history-item-date">{{ document.uploaded_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                                <span class="history-item-stats">{{ document.clause_count }} clauses • {{ document.word_count }} words</span>
+                            </div>
+                        </div>
+                        <div class="history-item-actions">
+                            <a href="{{ url_for('view_document', document_id=document.id) }}" class="btn-view">View Report</a>
+                            <a href="{{ url_for('download_report', document_id=document.id) }}" class="btn-download">Download</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="history-empty">
+                    <div class="history-empty-icon">🗂️</div>
+                    <p>No documents processed yet. Upload a contract to get started.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <div class="logo-icon">📄</div>
+            <h3>Contract Language Simplifier</h3>
+        </div>
+        <p>&copy; 2025 Contract Language Simplifier. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

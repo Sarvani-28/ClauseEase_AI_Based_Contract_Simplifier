@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to ClauseEase AI{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="welcome-wrapper">
+    <div class="welcome-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-badge">
+                <span class="badge-icon">⚡</span>
+                <span class="badge-text">AI-Powered Legal Document Processing</span>
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="title-white">ClauseEase</span>
+                <span class="title-cyan">AI based Contract Language Simplifier</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                Transform complex legal contracts into simple, easy-to-understand English.
+                Extract key clauses and get readability metrics instantly with AI precision.
+            </p>
+            
+            <a href="{{ url_for('auth.login') }}" class="btn-get-started">
+                <span>Get Started</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="features-container">
+                <h2 class="features-title">Powerful Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Multi-Format Support</h3>
+                            <p>Upload PDF, DOCX, and TXT files seamlessly for instant processing</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                        </div>
+                        <div class="feature-content">
+                            <h3>AI Clause Detection</h3>
+                            <p>Automatically identify and categorize 15+ clause types with high accuracy</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"/>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                            </svg>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Smart Simplification</h3>
+                            <p>Three levels of text simplification: Basic, Intermediate, and Advanced</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Legal Term Glossary</h3>
+                            <p>Instant definitions and explanations for complex legal terminology</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="14"/>
+                            </svg>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Readability Metrics</h3>
+                            <p>Comprehensive analysis with Flesch scores and detailed statistics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="workflow-section">
+            <div class="workflow-container">
+                <h2 class="workflow-title">How It Works</h2>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <h4>Upload Document</h4>
+                        <p>Upload your contract in PDF, DOCX, or TXT format</p>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+                            <path d="M0 12h36M24 4l8 8-8 8" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <h4>AI Processing</h4>
+                        <p>Our AI analyzes and extracts key clauses automatically</p>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+                            <path d="M0 12h36M24 4l8 8-8 8" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <h4>Get Results</h4>
+                        <p>View simplified text, metrics, and downloadable reports</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-container">
+                <div class="cta-content">
+                    <h2>Ready to Simplify Your Contracts?</h2>
+                    <p>Join thousands of professionals who trust ClauseEase AI for smarter contract analysis</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn-cta">
+                        Start Your Free Analysis
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
