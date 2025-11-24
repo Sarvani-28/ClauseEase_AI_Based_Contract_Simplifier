@@ -35,20 +35,48 @@ ClauseEase is an innovative Python-based application designed to simplify comple
   Custom models for clause simplification
 
 📁 Project Structure
-ClauseEase/
+Clause_Ease_AI_Based_Contract_Language_Simplifier/
 │
-├── data/               # Sample contract datasets                                                                                                                                                                     
-├── scripts/            # Python scripts for processing and analysis                                                                                                                                                  
-├── src/                # Core application logic                                                                                                                                                                        
-│   ├── extractor.py    # Clause extraction logic                                                                                                                                                                    
-│   ├── summarizer.py   # Clause simplification logic                                                                                                                                                                          
-│   └── generator.py    # Template generation logic                                                                                                                                                                            
-├── static/             # Static files for web interface                                                                                                                                                              
-├── templates/          # HTML templates for web interface                                                                                                                                                            
-├── .env.example        # Environment variable example                                                                                                                                                                  
-├── .gitignore          # Git ignore rules                                                                                                                                                                              
-├── requirements.txt    # Python dependencies                                                                                                                                                                                          
-└── app.py              # Flask application entry point                                                                                                                                                                                        
+├── src/                                # Main application code
+│   ├── app.py                          # Flask application entry point
+│   └── components/                     # Core NLP processing modules
+│       ├── module1_document_ingestion.py       # PDF/DOCX/TXT extraction
+│       ├── module2_text_preprocessing.py       # Text cleaning
+│       ├── module3_clause_detection.py         # Clause classification
+│       ├── module4_legal_terms.py              # Legal term extraction
+│       ├── module5_language_simplification.py  # Text simplification
+│       └── readability_metrics.py              # Readability scoring
+│
+├── templates/                          # HTML templates (Jinja2)
+│   ├── index.html                       # Base layout
+│   ├── login.html                      # Login page
+│   ├── register.html                   # Registration page
+│   ├── landing.html                    # Main dashboard
+│   ├── results.html                    # Results display page
+│   └── history.html                    # Document history page
+│
+├── static/                             # CSS and JavaScript files
+│   ├── css/                            # Stylesheets
+│   │   ├── auth.css                    # Login/Register styling
+│   │   ├── landing.css                 # Dashboard styling
+│   │   ├── results.css                 # Results page styling
+│   │   └── history.css                 # History page styling
+│   └── js/                             # JavaScript files
+│       ├── landing.js                  # Dashboard functionality
+│       └── results.js                  # Results page functionality
+│
+├── scripts/                            # Utility scripts
+│   ├── download_models.py              # NLP model downloader
+│
+├── data/                               # Database storage (auto-created)
+│   └── clauseease.db                   # SQLite database
+│
+├── temp_uploads/                       # Temporary file storage (auto-created)
+│
+├── requirements.txt                    # Python dependencies
+├── .env.example                        # Environment variables template
+├── .gitignore                          # Git ignore rules
+└── README.md                           # This file                                                                                                                                                                                      
 
 
 🛠️ Installation
@@ -90,4 +118,5 @@ Unit tests are located in the tests/ directory. To run the tests:
   pytest
 
 📞 Contact
+
 For questions or contributions, please contact me at mulukutlasarvani@gmail.com
